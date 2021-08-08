@@ -1,0 +1,27 @@
+services:
+  # can connect to sql server from outside container
+  # using SQL TOOL server: localhost, user:sa and password as below
+  # or sqlcmd -S localhost,1433 -U sa -P "docker_sql@123"
+  sql:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: sql
+    hostname: sql-host
+    user: root   #####################   <<<<<<<<< IMPORTANT!!!!!  ############
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: docker_sql@123
+      MSSQL_PID: Developer
+    ports:
+      - 1433:1433
+    volumes:
+      #- /data/docker/sqldata:/var/opt/mssql/data
+      #- /data/docker/sqlhome:/home
+      - ./.docker/sql/sqldata:/var/opt/mssql/data
+      - ./.docker/sql/scripts:/var/opt/mssql/scripts
+    healthcheck:
+      test: /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "$$SA_PASSWORD" -Q "select 1" -b -o /dev/null
+      interval: 10s
+      retries: 20
+      start_period: 10s
+    
+  

@@ -1,0 +1,23 @@
+services:
+  dotnet-app:
+      hostname: dotnet-app
+      environment:
+        ASPNETCORE_ENVIRONMENT: "Development"
+        OCELOT_ENVIRONMENT: "Docker"
+        ConnectionStrings:DefaultConnection: "${DefaultConnection}"
+      image: dotnet-app
+      build:
+        context: ./dotnet5/src
+        cache_from:
+          - "mcr.microsoft.com/dotnet/sdk:5.0-alpine"
+          - "mcr.microsoft.com/dotnet/runtime-deps:5.0-alpine"
+        dockerfile: ./Dockerfile
+      ports:
+        - "5000:80"
+      labels:
+        build.buildno: "${BUILD_BUILDNUMBER}"
+        build.definition: "${SYSTEM_DEFINITIONNAME}"
+        build.repositoryuri: ${BUILD_REPOSITORY_URI}
+        build.sourcebranch: ${BUILD_SOURCEBRANCHNAME}
+        build.sourceversion: ${BUILD_SOURCEVERSION}
+
