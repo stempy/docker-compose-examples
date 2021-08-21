@@ -1,0 +1,18 @@
+version: "3.7"
+services: 
+    # open http://localhost:5444 for admin
+    seq:
+        container_name: "seq_container"
+        image: datalust/seq:latest
+        hostname: "seq-host"
+        ports:
+            - "5444:80"
+            - "5341:5341"
+        volumes:
+            - /data/seq:/data
+        environment:
+            ACCEPT_EULA: "Y"
+            #SEQ_API_LISTENURIS: "http://localhost:5341"
+            #SEQ_FIRSTRUN_ADMINPASSWORDHASH: "admin"
+        restart: unless-stopped
+
