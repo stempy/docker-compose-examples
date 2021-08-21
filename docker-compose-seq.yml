@@ -16,3 +16,6 @@ services:
             #SEQ_FIRSTRUN_ADMINPASSWORDHASH: "admin"
         restart: unless-stopped
 
+networks:
+  default: 
+    name: docker-default

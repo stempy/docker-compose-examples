@@ -21,3 +21,6 @@ services:
         build.sourcebranch: ${BUILD_SOURCEBRANCHNAME}
         build.sourceversion: ${BUILD_SOURCEVERSION}
 
+networks:
+  default: 
+    name: docker-default
