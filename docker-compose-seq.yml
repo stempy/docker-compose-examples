@@ -9,7 +9,7 @@ services:
             - "5444:80"
             - "5341:5341"
         volumes:
-            - /data/seq:/data
+            - ./.docker/seq:/data
         environment:
             ACCEPT_EULA: "Y"
             #SEQ_API_LISTENURIS: "http://localhost:5341"
