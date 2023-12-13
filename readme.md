@@ -1,10 +1,38 @@
-# Docker examples for Dockerfile and docker-compose files
+# docker-shared-services
 
-> Note: Dockerfile is case sensitive, default should be exactly "Dockerfile"
+This provides docker compose setup for various services with a simple command to startup/shutdown
 
-dotnet5 api was generated using
+> NOTE: all data for compose services should reside in `.docker` directory, just stop a container and delete specific folder to reset data for a particular service. It will survive docker compose down and up unless deleted. ie delete `.docker/mysql` to clear mysql only data.
+
+## Usage:
+
+### Compose up
+
+`compose composename`
 
 ```sh
-dotnet new webapi -f net5.0
+compose mysql
+compose redis
+...
+
 ```
 
+### Compose down
+
+```sh
+compose-down mysql
+compose-down redis
+```
+
+## Other useful docker commands (besides the gui)
+
+list docker containers
+
+```sh
+docker ps
+```
+
+view logs for a container
+```sh
+docker logs mysql
+```
