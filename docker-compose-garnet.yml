@@ -1,0 +1,31 @@
+version: "3.7"
+services:
+
+  garnet:
+    image: "yzy613/garnet:latest"
+    hostname: "garnet"
+    #command: redis-server --requirepass sOmE_sEcUrE_pAsS
+    ports:
+     - "6379:6379"
+     - "3278:3278"
+    volumes:
+     - ./.docker/redis/data/redis-data:/var/lib/redis
+     - ./.docker/redis/data/redis.conf:/usr/local/etc/redis/redis.conf
+    environment:
+      REDIS_REPLICATION_MODE: "master"
+
+  redis-commander:
+      container_name: redis-commander
+      hostname: redis-commander
+      image: rediscommander/redis-commander:latest
+      restart: unless-stopped
+      environment:
+      - REDIS_HOSTS=local:garnet:3278
+      ports:
+      - "8081:8081"
+
+
+networks:
+  default: 
+    name: docker-default
+
