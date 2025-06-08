@@ -26,4 +26,6 @@ services:
       }'
       "
 
-      
+networks:
+  default: 
+    name: docker-default
