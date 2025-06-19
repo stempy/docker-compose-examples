@@ -1,37 +1,58 @@
+param(
+    [Parameter(ValueFromRemainingArguments=$true)]    
+    [string[]]$ComposeFiles = @()
+)
 $thisDir = $PSScriptRoot
-
-function Show-Yml {
-    param($yml)
-    $file = $yml -replace 'docker-compose-', '' -replace '\.yml$', ''
-    Write-Host $file
-}
+$dockerDir = $thisDir
 
 function List-Yml {
-    Push-Location $thisDir
-    Get-ChildItem -Filter "*.yml" | ForEach-Object { Show-Yml $_.Name }
-    $script:composename = Read-Host "Compose Name ?"
+    Push-Location $dockerDir
+    Get-ChildItem -Filter "*.yml" | ForEach-Object { 
+        $displayName = $_.Name -replace '^docker-compose-', '' -replace '\.yml$', ''
+        Show-Yml $displayName 
+    }    
     Pop-Location
 }
 
-$composename = $args[0]
-if ([string]::IsNullOrEmpty($composename)) {
+function Compose {
+    param(
+        [string]$ComposeName
+    )
+
+    if (-not $ComposeName.StartsWith("docker-compose-")) {
+        $ComposeName = "docker-compose-$ComposeName"
+    }
+    if (-not $ComposeName.EndsWith(".yml")) {
+        $ComposeName = "$ComposeName.yml"
+    }
+
+
+    $composeFile = Join-Path $dockerDir $ComposeName
+    if (Test-Path $composeFile) {
+        Write-Host "Running docker compose with file: $composeFile"
+        docker compose -f $composeFile up -d
+    } else {
+        Write-Host "Compose file not found: $composeFile"
+    }
+}
+function Show-Yml {
+    param(
+        [string]$YmlName
+    )
+    Write-Host "YML File: $YmlName"
+}
+
+# Check if any compose files were provided
+if ($ComposeFiles.Count -eq 0) {
+    Write-Host "No compose files provided. Listing available YML files:"
     List-Yml
+    $ComposeFiles = Read-Host "Enter the names of the compose files to run (space-separated)"
+    $ComposeFiles = $ComposeFiles -split " \s*"
 }
 
-if ([string]::IsNullOrEmpty($composename)) {
-    Write-Host "composename not set"
-    exit 1
+foreach ($file in $ComposeFiles) {
+    Compose -ComposeName $file
 }
 
-Push-Location $thisDir
-$composeFile = "docker-compose-$composename.yml"
-Write-Host "executing docker compose -- $composeFile"
-
-if (-not (Test-Path $composeFile)) {
-    Write-Host "'$composeFile' not found"
-    exit 1
-}
-
-docker compose -f $composeFile up -d
 docker ps --format "table {{.ID}}`t{{.Image}}`t{{.Names}}`t{{.Status}}`t{{.Ports}}"
-Pop-Location
+
